@@ -1,0 +1,9 @@
+#app{
+    padding:15px;
+}
+
+.article{
+    border:1px solid transparent;
+    background-color: beige;
+    margin:10px 15px;
+}
