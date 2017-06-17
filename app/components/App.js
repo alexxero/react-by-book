@@ -74,14 +74,6 @@ var Add = React.createClass({
         ReactDOM.findDOMNode(this.refs.author).focus();
     },
 
-    onAuthorChange:function (e) {
-        e.target.value.trim().length > 0 ? this.setState({authorIsEmpty:false}) : this.setState({authorIsEmpty:true})
-    },
-
-    onTextChange:function (e) {
-        e.target.value.trim().length > 0 ? this.setState({textIsEmpty:false}) : this.setState({textIsEmpty:true})
-    },
-
     sendInput: function () {
         console.log(this.refs);
         var author = ReactDOM.findDOMNode(this.refs.author).value,
@@ -93,20 +85,24 @@ var Add = React.createClass({
         this.setState({ruleIsChecked: !this.state.ruleIsChecked})
     },
 
+    onFieldChange:function (fieldName, e) {
+        e.target.value.trim().length > 0 ? this.setState({[''+fieldName]:false}) : this.setState({[''+fieldName]:true})
+    },
+
     render: function () {
         return(
             <form className="add cf">
                 <input
                     className="add__author form-control"
                     defaultValue=""
-                    onChange={this.onAuthorChange}
+                    onChange={this.onFieldChange.bind(this, 'authorIsEmpty')}
                     placeholder="Enter your name"
                     ref="author"
                     type="text"/>
                 <textarea
                     className="add__text form-control"
                     ref="text"
-                    onChange={this.onTextChange}
+                    onChange={this.onFieldChange.bind(this, 'textIsEmpty')}
                     cols="30" rows="10"></textarea>
                 <br/>
                 <label className="add__checkrule">
