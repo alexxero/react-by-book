@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 
 var my_news = [
     {
@@ -59,7 +60,78 @@ var Article = React.createClass({
     }
 });
 
+var Add = React.createClass({
+    getInitialState: function () {
+        return {
+            btnIsDisabled:true,
+            ruleIsChecked: false,
+            authorIsEmpty: true,
+            textIsEmpty: true
+        }
+    },
+
+    componentDidMount:function () {
+        ReactDOM.findDOMNode(this.refs.author).focus();
+    },
+
+    onAuthorChange:function (e) {
+        e.target.value.trim().length > 0 ? this.setState({authorIsEmpty:false}) : this.setState({authorIsEmpty:true})
+    },
+
+    onTextChange:function (e) {
+        e.target.value.trim().length > 0 ? this.setState({textIsEmpty:false}) : this.setState({textIsEmpty:true})
+    },
+
+    sendInput: function () {
+        console.log(this.refs);
+        var author = ReactDOM.findDOMNode(this.refs.author).value,
+            text = ReactDOM.findDOMNode(this.refs.text).value;
+        alert(author + '\n' + text);
+    },
+
+    ruleChecked: function (e) {
+        this.setState({ruleIsChecked: !this.state.ruleIsChecked})
+    },
+
+    render: function () {
+        return(
+            <form className="add cf">
+                <input
+                    className="add__author form-control"
+                    defaultValue=""
+                    onChange={this.onAuthorChange}
+                    placeholder="Enter your name"
+                    ref="author"
+                    type="text"/>
+                <textarea
+                    className="add__text form-control"
+                    ref="text"
+                    onChange={this.onTextChange}
+                    cols="30" rows="10"></textarea>
+                <br/>
+                <label className="add__checkrule">
+                    <input type="checkbox" onChange={this.ruleChecked} ref="checkrule" defaultChecked={false}/> Agreed
+                </label>
+                <br/>
+                <button
+                    type="button"
+                    onClick={this.sendInput}
+                    ref="alert_button"
+                    className="btn btn-primary"
+                    disabled={!this.state.ruleIsChecked || this.state.authorIsEmpty || this.state.textIsEmpty}
+                >Send</button>
+            </form>
+        )
+    }
+});
+
 var News = React.createClass({
+    getInitialState: function () {
+        return{
+            counter:0
+        }
+    },
+
     propTypes:{
         data:React.PropTypes.array.isRequired
     },
@@ -75,7 +147,7 @@ var News = React.createClass({
                         <Article className="article" data={item} />
                     </div>
                 )
-            })
+            });
             return (
                 <div className="news">
                     {newsTemplate}
@@ -93,6 +165,7 @@ var App = React.createClass({
         return(
             <div className="app">
                 <h3>Новости</h3>
+                <Add />
                 <News data={my_news}/>
             </div>
         )

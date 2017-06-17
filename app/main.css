@@ -11,3 +11,7 @@
 .none{
     display: none;
 }
+
+.test-input{
+    margin: 0 5px 5px 0;
+}

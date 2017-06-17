@@ -9763,22 +9763,46 @@ var React = __webpack_require__(49);
 
 var my_news = [{
     author: 'user1',
-    text: 'I am the shadow, I am the light'
+    text: 'I am the shadow, I am the light',
+    fullText: 'Shinedown - Boom Lay Boom Lay Boom'
 }, {
     author: 'user2',
-    text: 'But I am definetely not alone, Well I\'m definitely not alone'
+    text: 'But I am definetely not alone, Well I\'m definitely not alone',
+    fullText: 'Volbeat - Counting'
 }, {
     author: 'user3',
-    text: 'I need help in many wayyyys'
+    text: 'I need help in many ways',
+    fullText: 'Sum41 - Screaming Bloody Murder'
 }];
 
 var Article = React.createClass({
     displayName: 'Article',
 
+    propTypes: {
+        data: React.PropTypes.shape({
+            author: React.PropTypes.string.isRequired,
+            text: React.PropTypes.string.isRequired,
+            fullText: React.PropTypes.string.isRequired
+        })
+    },
+
+    getInitialState: function () {
+        return {
+            visible: false
+        };
+    },
+
+    readmoreClick: function (e) {
+        e.preventDefault();
+        this.setState({ visible: true });
+    },
+
     render: function () {
         var author = this.props.data.author,
-            text = this.props.data.text;
-
+            text = this.props.data.text,
+            fullText = this.props.data.fullText,
+            visible = this.state.visible;
+        console.log('render', this);
         return React.createElement(
             'div',
             { className: 'article' },
@@ -9792,6 +9816,18 @@ var Article = React.createClass({
                 'p',
                 { className: 'news__text' },
                 text
+            ),
+            React.createElement(
+                'a',
+                { href: '#',
+                    className: 'news__readmore ' + (visible ? 'none' : ''),
+                    onClick: this.readmoreClick },
+                '\u041F\u043E\u0434\u0440\u043E\u0431\u043D\u0435\u0435'
+            ),
+            React.createElement(
+                'p',
+                { className: 'news__full-text ' + (visible ? '' : 'none') },
+                fullText
             )
         );
     }
@@ -9799,6 +9835,10 @@ var Article = React.createClass({
 
 var News = React.createClass({
     displayName: 'News',
+
+    propTypes: {
+        data: React.PropTypes.array.isRequired
+    },
 
     render: function () {
         var data = this.props.data;
@@ -9809,7 +9849,7 @@ var News = React.createClass({
                 return React.createElement(
                     'div',
                     { key: index },
-                    React.createElement(Article, { data: item })
+                    React.createElement(Article, { className: 'article', data: item })
                 );
             });
             return React.createElement(
@@ -9837,6 +9877,11 @@ var App = React.createClass({
         return React.createElement(
             'div',
             { className: 'app' },
+            React.createElement(
+                'h3',
+                null,
+                '\u041D\u043E\u0432\u043E\u0441\u0442\u0438'
+            ),
             React.createElement(News, { data: my_news })
         );
     }
