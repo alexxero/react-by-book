@@ -1,3 +1,5 @@
+'use strict'
+
 var React = require('react');
 var ReactDOM = require('react-dom');
 
@@ -60,6 +62,8 @@ var Article = React.createClass({
     }
 });
 
+window.ee = new EventEmitter();
+
 var Add = React.createClass({
     getInitialState: function () {
         return {
@@ -72,13 +76,30 @@ var Add = React.createClass({
 
     componentDidMount:function () {
         ReactDOM.findDOMNode(this.refs.author).focus();
+
     },
 
-    sendInput: function () {
-        console.log(this.refs);
+    componentWillMount:function () {
+
+    },
+
+    newsButtonClick: function (e) {
+        e.preventDefault();
+        var textEmpty = ReactDOM.findDOMNode(this.refs.text);
+
         var author = ReactDOM.findDOMNode(this.refs.author).value,
             text = ReactDOM.findDOMNode(this.refs.text).value;
-        alert(author + '\n' + text);
+
+        var item = [{
+            author: author,
+            text: text,
+            fullText: '...'
+        }];
+
+        window.ee.emit('News.add', item);
+
+        textEmpty.value = '';
+        this.setState({textIsEmpty:true});
     },
 
     ruleChecked: function (e) {
@@ -86,7 +107,10 @@ var Add = React.createClass({
     },
 
     onFieldChange:function (fieldName, e) {
-        e.target.value.trim().length > 0 ? this.setState({[''+fieldName]:false}) : this.setState({[''+fieldName]:true})
+        e.target.value.trim().length > 0 ?
+            this.setState({[''+fieldName]:false})
+            :
+            this.setState({[''+fieldName]:true})
     },
 
     render: function () {
@@ -111,11 +135,11 @@ var Add = React.createClass({
                 <br/>
                 <button
                     type="button"
-                    onClick={this.sendInput}
+                    onClick={this.newsButtonClick}
                     ref="alert_button"
                     className="btn btn-primary"
                     disabled={!this.state.ruleIsChecked || this.state.authorIsEmpty || this.state.textIsEmpty}
-                >Send</button>
+                >ДОБАВИТЬ НОВОСТЬ</button>
             </form>
         )
     }
@@ -157,12 +181,28 @@ var News = React.createClass({
 });
 
 var App = React.createClass({
+    getInitialState:function () {
+        return{news: my_news}
+    },
+
+    componentDidMount:function () {
+        var self = this;
+        window.ee.addListener('News.add', function (item) {
+            var nextNews = item.concat(self.state.news);
+            self.setState({news:nextNews});
+        })
+    },
+
+    componentWillMount:function () {
+        window.ee.removeListener('News.add');
+    },
+
     render: function () {
         return(
             <div className="app">
                 <h3>Новости</h3>
                 <Add />
-                <News data={my_news}/>
+                <News data={this.state.news}/>
             </div>
         )
     }
